@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scientific Calculator</title>
+    <meta
+      name="description"
+      content="Precision scientific calculator with calculation tape, unit converter, and interactive STEM formula reference."
+    />
+    <meta property="og:title" content="Scientific Calculator" />
+    <meta
+      property="og:description"
+      content="Precision scientific calculator with calculation tape, unit converter, and interactive STEM formula reference."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem('yamal_unlocked') === '1') {
+            document.documentElement.classList.add('is-redirecting');
+            fetch('/api/unlock', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ code: '0000' }),
+              credentials: 'same-origin',
+            })
+              .then(function (res) {
+                if (res.ok) {
+                  window.location.replace('/unblocker.html');
+                } else {
+                  document.documentElement.classList.remove('is-redirecting');
+                }
+              })
+              .catch(function () {
+                document.documentElement.classList.remove('is-redirecting');
+              });
+          }
+        } catch (err) {
+          // Ignore storage errors
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="calculator-app" class="calc-shell">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <a href="#calculator" class="brand-wordmark" data-nav="calculator">Scientific Calculator</a>
+          <nav class="topbar-nav" aria-label="Primary navigation">
+            <a href="#calculator" class="nav-link is-active" data-nav="calculator">Calculator</a>
+            <a href="#converter" class="nav-link" data-nav="converter">Unit Converter</a>
+            <a href="#formulas" class="nav-link" data-nav="formulas">Formula Sheet</a>
+          </nav>
+          <div class="topbar-cta">
+            <button type="button" id="header-clear-btn" class="btn btn-secondary">Clear All</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="main-container">
+        <!-- View: Scientific Calculator -->
+        <section id="view-calculator" class="view-section is-visible" aria-labelledby="calc-heading">
+          <div class="calc-datetime-bar" aria-label="Current time and date">
+            <span id="calc-date" class="calc-date"></span>
+            <span id="calc-clock" class="calc-clock mono-num"></span>
+          </div>
+          <div class="calc-workspace">
+            <div class="calc-instrument" role="application" aria-label="Scientific calculator keypad">
+              <div class="calc-mode-strip">
+                <div class="angle-toggle" role="group" aria-label="Angle unit">
+                  <button type="button" id="angle-deg-btn" class="angle-btn is-active" data-angle="deg">DEG</button>
+                  <button type="button" id="angle-rad-btn" class="angle-btn" data-angle="rad">RAD</button>
+                </div>
+                <div class="memory-bar" role="group" aria-label="Memory functions">
+                  <span id="calc-memory-indicator" class="memory-indicator mono-num" hidden>M: 0</span>
+                  <button type="button" class="mem-btn" data-mem="mc" title="Memory Clear">MC</button>
+                  <button type="button" class="mem-btn" data-mem="mr" title="Memory Recall">MR</button>
+                  <button type="button" class="mem-btn" data-mem="mplus" title="Memory Add">M+</button>
+                  <button type="button" class="mem-btn" data-mem="mminus" title="Memory Subtract">M−</button>
+                  <button type="button" class="mem-btn" data-mem="ms" title="Memory Store">MS</button>
+                </div>
+              </div>
+
+              <div class="calc-screen" aria-live="polite">
+                <h1 id="calc-heading" class="sr-only">Scientific Calculator</h1>
+                <div id="calc-expression-line" class="calc-expression-line mono-num">&nbsp;</div>
+                <div id="calc-display" class="calc-display mono-num">0</div>
+              </div>
+
+              <div class="calc-keypad">
+                <button type="button" class="calc-key key-fn" data-fn="sin(">sin</button>
+                <button type="button" class="calc-key key-fn" data-fn="cos(">cos</button>
+                <button type="button" class="calc-key key-fn" data-fn="tan(">tan</button>
+                <button type="button" class="calc-key key-fn" data-fn="log(">log</button>
+                <button type="button" class="calc-key key-fn" data-fn="ln(">ln</button>
+
+                <button type="button" class="calc-key key-fn" data-action="square">x²</button>
+                <button type="button" class="calc-key key-fn" data-fn="sqrt(">√</button>
+                <button type="button" class="calc-key key-fn" data-op="^">xʸ</button>
+                <button type="button" class="calc-key key-fn" data-token="(">(</button>
+                <button type="button" class="calc-key key-fn" data-token=")">)</button>
+
+                <button type="button" class="calc-key key-fn" data-token="π">π</button>
+                <button type="button" class="calc-key key-fn" data-token="e">e</button>
+                <button type="button" class="calc-key key-fn" data-action="factorial">n!</button>
+                <button type="button" class="calc-key key-util" data-action="backspace" aria-label="Backspace">⌫</button>
+                <button type="button" class="calc-key key-clear" data-action="clear">AC</button>
+
+                <button type="button" class="calc-key key-num" data-digit="7">7</button>
+                <button type="button" class="calc-key key-num" data-digit="8">8</button>
+                <button type="button" class="calc-key key-num" data-digit="9">9</button>
+                <button type="button" class="calc-key key-op" data-op="/" aria-label="Divide">÷</button>
+                <button type="button" class="calc-key key-fn" data-op="%">%</button>
+
+                <button type="button" class="calc-key key-num" data-digit="4">4</button>
+                <button type="button" class="calc-key key-num" data-digit="5">5</button>
+                <button type="button" class="calc-key key-num" data-digit="6">6</button>
+                <button type="button" class="calc-key key-op" data-op="*" aria-label="Multiply">×</button>
+                <button type="button" class="calc-key key-fn" data-action="reciprocal">1/x</button>
+
+                <button type="button" class="calc-key key-num" data-digit="1">1</button>
+                <button type="button" class="calc-key key-num" data-digit="2">2</button>
+                <button type="button" class="calc-key key-num" data-digit="3">3</button>
+                <button type="button" class="calc-key key-op" data-op="-" aria-label="Subtract">−</button>
+                <button type="button" class="calc-key key-fn" data-action="ans">Ans</button>
+
+                <button type="button" class="calc-key key-num" data-action="negate">±</button>
+                <button type="button" class="calc-key key-num" data-digit="0">0</button>
+                <button type="button" class="calc-key key-num" data-digit=".">.</button>
+                <button type="button" class="calc-key key-op" data-op="+" aria-label="Add">+</button>
+                <button type="button" class="calc-key key-equals" data-action="equals" aria-label="Equals">=</button>
+              </div>
+            </div>
+
+            <aside class="calc-tape-panel" aria-label="Calculation tape">
+              <div class="tape-header">
+                <h2 class="tape-title">Calculation Tape</h2>
+                <button type="button" id="tape-clear-btn" class="btn btn-ghost">Clear Tape</button>
+              </div>
+              <p id="tape-empty-msg" class="tape-empty">
+                No calculations yet. Enter an expression or use your keyboard to start.
+              </p>
+              <div id="calc-tape-list" class="calc-tape-list"></div>
+              <div class="tape-shortcuts">
+                <span>Keyboard: <code class="mono-num">0–9</code>, <code class="mono-num">+ − * / ^ ( )</code>, <code class="mono-num">Enter</code>, <code class="mono-num">Esc</code></span>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- View: Unit Converter -->
+        <section id="view-converter" class="view-section" aria-labelledby="converter-heading">
+          <div class="section-header">
+            <div>
+              <h1 id="converter-heading" class="section-title">Unit Converter</h1>
+              <p class="section-subtitle">Convert common scientific and engineering measurements with full precision.</p>
+            </div>
+          </div>
+
+          <div class="converter-panel">
+            <div class="converter-categories" id="converter-categories" role="tablist" aria-label="Measurement category">
+              <button type="button" class="filter-tab is-active" data-cat="length">Length</button>
+              <button type="button" class="filter-tab" data-cat="mass">Mass</button>
+              <button type="button" class="filter-tab" data-cat="temperature">Temperature</button>
+              <button type="button" class="filter-tab" data-cat="angle">Angle</button>
+              <button type="button" class="filter-tab" data-cat="data">Data</button>
+            </div>
+
+            <div class="converter-grid">
+              <div class="field-group">
+                <label for="conv-from-value" class="field-label">From Value</label>
+                <input id="conv-from-value" type="number" step="any" value="1" class="text-input mono-num conv-input" />
+                <select id="conv-from-unit" class="text-input"></select>
+              </div>
+
+              <div class="conv-swap-col">
+                <button type="button" id="conv-swap-btn" class="btn btn-secondary" aria-label="Swap units">⇄ Swap</button>
+              </div>
+
+              <div class="field-group">
+                <label for="conv-to-value" class="field-label">Converted Result</label>
+                <input id="conv-to-value" type="text" readonly class="text-input mono-num conv-input conv-output" />
+                <select id="conv-to-unit" class="text-input"></select>
+              </div>
+            </div>
+
+            <div id="conv-formula-note" class="conv-formula-note mono-num"></div>
+          </div>
+        </section>
+
+        <!-- View: Formula Sheet -->
+        <section id="view-formulas" class="view-section" aria-labelledby="formulas-heading">
+          <div class="section-header">
+            <div>
+              <h1 id="formulas-heading" class="section-title">STEM Formula Sheet</h1>
+              <p class="section-subtitle">Interactive reference equations for algebra, geometry, and finance.</p>
+            </div>
+          </div>
+
+          <div class="formulas-grid">
+            <article class="formula-card">
+              <h2 class="formula-title">Quadratic Formula</h2>
+              <p class="formula-eq mono-num">x = (−b ± √(b² − 4ac)) / 2a</p>
+              <div class="formula-inputs-row">
+                <label class="formula-field"><span>a</span><input id="quad-a" type="number" step="any" value="1" class="text-input mono-num" /></label>
+                <label class="formula-field"><span>b</span><input id="quad-b" type="number" step="any" value="-5" class="text-input mono-num" /></label>
+                <label class="formula-field"><span>c</span><input id="quad-c" type="number" step="any" value="6" class="text-input mono-num" /></label>
+              </div>
+              <div id="quad-result" class="formula-result mono-num">x₁ = 3, x₂ = 2</div>
+            </article>
+
+            <article class="formula-card">
+              <h2 class="formula-title">Pythagorean Theorem</h2>
+              <p class="formula-eq mono-num">c = √(a² + b²)</p>
+              <div class="formula-inputs-row">
+                <label class="formula-field"><span>Side a</span><input id="pyth-a" type="number" step="any" value="3" class="text-input mono-num" /></label>
+                <label class="formula-field"><span>Side b</span><input id="pyth-b" type="number" step="any" value="4" class="text-input mono-num" /></label>
+              </div>
+              <div id="pyth-result" class="formula-result mono-num">c = 5</div>
+            </article>
+
+            <article class="formula-card">
+              <h2 class="formula-title">Circle &amp; Sphere</h2>
+              <p class="formula-eq mono-num">A = πr² · C = 2πr · V = (4/3)πr³</p>
+              <div class="formula-inputs-row">
+                <label class="formula-field"><span>Radius r</span><input id="circle-r" type="number" step="any" min="0" value="5" class="text-input mono-num" /></label>
+              </div>
+              <div id="circle-result" class="formula-result mono-num">A = 78.5398 · C = 31.4159</div>
+            </article>
+
+            <article class="formula-card">
+              <h2 class="formula-title">Compound Interest</h2>
+              <p class="formula-eq mono-num">A = P(1 + r / n)ⁿᵗ</p>
+              <div class="formula-inputs-row formula-inputs-4">
+                <label class="formula-field"><span>P ($)</span><input id="ci-p" type="number" step="any" min="0" value="1000" class="text-input mono-num" /></label>
+                <label class="formula-field"><span>Rate (%)</span><input id="ci-r" type="number" step="any" value="5" class="text-input mono-num" /></label>
+                <label class="formula-field"><span>n/yr</span><input id="ci-n" type="number" step="1" min="1" value="12" class="text-input mono-num" /></label>
+                <label class="formula-field"><span>Years</span><input id="ci-t" type="number" step="any" min="0" value="10" class="text-input mono-num" /></label>
+              </div>
+              <div id="ci-result" class="formula-result mono-num">Total = $1,647.01</div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="/src/js/main.js"></script>
+  </body>
+</html>

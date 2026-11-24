@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Yamal</title>
+    <meta name="description" content="Yamal Web Unblocker" />
+    <link id="dynamic-favicon" rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="unblocker-app" class="unblocker-shell">
+      <header class="browser-chrome">
+        <div class="browser-tabs-row">
+          <span class="unblocker-brand">Yamal</span>
+          <button
+            type="button"
+            id="games-hub-tab-btn"
+            class="browser-tab browser-tab-pinned"
+            role="tab"
+            aria-selected="false"
+          >
+            <span class="tab-title-text">Games</span>
+          </button>
+          <div id="browser-tabs" class="browser-tabs" role="tablist" aria-label="Open web tabs"></div>
+          <button type="button" id="browser-new-tab-btn" class="tab-add-btn" aria-label="New tab">+</button>
+        </div>
+
+        <div class="browser-toolbar">
+          <div class="nav-controls">
+            <button type="button" id="browser-back-btn" class="tool-btn" aria-label="Back" title="Back">&#8592;</button>
+            <button type="button" id="browser-forward-btn" class="tool-btn" aria-label="Forward" title="Forward">&#8594;</button>
+            <button type="button" id="browser-reload-btn" class="tool-btn" aria-label="Reload" title="Reload">&#8635;</button>
+            <button type="button" id="browser-home-btn" class="tool-btn" aria-label="Start Page" title="Start Page">Home</button>
+          </div>
+
+          <form id="browser-address-form" class="address-form" autocomplete="off">
+            <label for="browser-address-input" class="sr-only">Enter any website URL or search query</label>
+            <input
+              id="browser-address-input"
+              type="text"
+              class="address-input"
+              placeholder="Type any website URL (e.g. wikipedia.org, coolmathgames.com) or search..."
+            />
+            <button
+              type="button"
+              id="browser-bookmark-btn"
+              class="tool-btn tool-btn-bookmark"
+              aria-label="Bookmark this page"
+              title="Bookmark current page (Alt+D)"
+              disabled
+            >&#9734;</button>
+            <button type="submit" class="btn-unblock">Go</button>
+          </form>
+
+          <button type="button" id="games-menu-btn" class="tool-btn tool-btn-cloak">Games</button>
+          <button type="button" id="history-menu-btn" class="tool-btn tool-btn-cloak" title="Session History (Alt+H)">History</button>
+          <button type="button" id="cloak-menu-btn" class="tool-btn tool-btn-cloak">Cloak</button>
+          <button type="button" id="settings-menu-btn" class="tool-btn tool-btn-cloak">Settings</button>
+        </div>
+
+        <div id="browser-loading-bar" class="browser-loading-bar" hidden></div>
+      </header>
+
+      <div id="browser-viewport" class="browser-viewport">
+        <div id="browser-start-page" class="browser-start-page">
+          <div class="start-hero">
+            <div class="start-datetime" aria-label="Current time and date">
+              <div id="start-clock" class="start-clock mono-num"></div>
+              <div id="start-date" class="start-date"></div>
+            </div>
+            <h1 class="start-title">Yamal</h1>
+            <p class="start-subtitle">
+              Enter any website URL or search term below to browse directly through Yamal.
+            </p>
+            <form id="start-search-form" class="start-search-form" autocomplete="off">
+              <label for="start-search-input" class="sr-only">Website URL or search</label>
+              <input
+                id="start-search-input"
+                type="text"
+                class="start-search-input"
+                placeholder="https://example.com or search the web..."
+              />
+              <button type="submit" class="btn-unblock btn-unblock-lg">Unblock</button>
+            </form>
+          </div>
+
+          <div class="bookmarks-section">
+            <div class="bookmarks-header">
+              <h2 class="bookmarks-heading">Quick Access</h2>
+              <button type="button" id="add-bookmark-toggle-btn" class="tool-btn">+ Add Link</button>
+            </div>
+
+            <form id="add-bookmark-form" class="add-bookmark-form" autocomplete="off" hidden>
+              <div class="add-bookmark-fields">
+                <label for="bookmark-name-input" class="sr-only">Website name</label>
+                <input
+                  id="bookmark-name-input"
+                  type="text"
+                  class="address-input"
+                  placeholder="Label (optional, e.g. My Site)"
+                  maxlength="60"
+                />
+                <label for="bookmark-url-input" class="sr-only">Website URL</label>
+                <input
+                  id="bookmark-url-input"
+                  type="text"
+                  class="address-input"
+                  placeholder="Website URL (e.g. youtube.com or https://example.com)"
+                  required
+                />
+                <button type="submit" class="btn-unblock">Save Link</button>
+                <button type="button" id="add-bookmark-cancel-btn" class="tool-btn">Cancel</button>
+              </div>
+              <p id="add-bookmark-error" class="add-bookmark-error" role="alert" aria-live="polite" hidden></p>
+            </form>
+
+            <p id="bookmarks-empty-msg" class="bookmarks-empty-msg" hidden>
+              No saved links yet. Click "+ Add Link" above or bookmark any page with the star button.
+            </p>
+            <div id="bookmarks-grid" class="bookmarks-grid"></div>
+          </div>
+        </div>
+
+        <section id="games-view" class="games-view" aria-label="Games library" hidden>
+          <div class="games-header">
+            <div>
+              <h1 class="games-title">Games</h1>
+              <p id="games-count-readout" class="games-subtitle">gn-math · StrongDog · now.gg</p>
+            </div>
+            <div class="games-site-links">
+              <button type="button" id="games-open-roblox" class="btn-unblock">Play Roblox</button>
+              <button type="button" id="games-open-strongdog-xp" class="tool-btn">Open StrongDog XP</button>
+              <button type="button" id="games-open-strongdog-classic" class="tool-btn">Open StrongDog</button>
+            </div>
+          </div>
+
+          <div class="games-toolbar">
+            <label for="games-search-input" class="sr-only">Search games</label>
+            <input
+              id="games-search-input"
+              type="search"
+              class="games-search-input"
+              placeholder="Search Roblox, gn-math, and StrongDog games..."
+            />
+
+            <div id="games-source-filters" class="games-source-filters" role="group" aria-label="Filter by source">
+              <button type="button" class="games-filter-btn is-active" data-source="all">All</button>
+              <button type="button" class="games-filter-btn" data-source="gn-math">gn-math</button>
+              <button type="button" class="games-filter-btn" data-source="strongdog">StrongDog</button>
+              <button type="button" class="games-filter-btn" data-source="now.gg">now.gg</button>
+            </div>
+
+            <label for="games-category-select" class="sr-only">Filter by category</label>
+            <select id="games-category-select" class="games-category-select">
+              <option value="all">All Categories</option>
+            </select>
+          </div>
+
+          <p id="games-status-msg" class="games-status-msg" hidden></p>
+          <div id="games-grid" class="games-grid"></div>
+          <div id="games-load-more-wrap" class="games-load-more-wrap" hidden>
+            <button type="button" id="games-load-more-btn" class="btn-unblock">Load More</button>
+          </div>
+        </section>
+
+        <div id="browser-frames-container" class="browser-frames-container" hidden>
+          <div id="frame-action-bar" class="frame-action-bar">
+            <div class="frame-action-meta">
+              <strong id="frame-action-title" class="frame-action-title">Loading...</strong>
+              <span id="frame-action-status" class="frame-action-status" role="status" aria-live="polite" hidden></span>
+            </div>
+            <div class="frame-action-buttons">
+              <button type="button" id="frame-back-games-btn" class="tool-btn" hidden>Back to Games</button>
+              <button type="button" id="frame-reload-btn" class="tool-btn">Reload</button>
+              <button type="button" id="frame-about-blank-btn" class="tool-btn">Open in about:blank</button>
+              <button type="button" id="frame-fullscreen-btn" class="btn-unblock">Fullscreen</button>
+            </div>
+          </div>
+          <div id="browser-iframes-stage" class="browser-iframes-stage"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Cloaking & Panic Disguise Modal -->
+    <div id="cloak-modal" class="cloak-modal" role="dialog" aria-modal="true" aria-labelledby="cloak-modal-title" hidden>
+      <div class="cloak-dialog">
+        <div class="cloak-dialog-header">
+          <div>
+            <h2 id="cloak-modal-title" class="cloak-dialog-title">Tab Cloak &amp; Disguise</h2>
+            <p class="cloak-dialog-subtitle">
+              Change this browser tab’s title and icon, or configure an instant panic screen.
+            </p>
+          </div>
+          <button type="button" id="cloak-close-btn" class="tool-btn" aria-label="Close cloak settings">Close</button>
+        </div>
+
+        <div class="cloak-section">
+          <h3 class="cloak-section-label">Disguise Presets</h3>
+          <div id="cloak-presets-grid" class="cloak-presets-grid"></div>
+        </div>
+
+        <form id="cloak-custom-form" class="cloak-custom-form" autocomplete="off">
+          <label for="cloak-custom-title" class="cloak-section-label">Custom Tab Title</label>
+          <div class="cloak-custom-row">
+            <input
+              id="cloak-custom-title"
+              type="text"
+              class="address-input"
+              placeholder="e.g. Chapter 5 Study Guide"
+              maxlength="80"
+            />
+            <button type="submit" class="btn-unblock">Apply</button>
+          </div>
+        </form>
+
+        <div class="cloak-panic-row">
+          <div class="cloak-panic-field">
+            <label for="cloak-panic-key" class="cloak-section-label">Panic Key</label>
+            <select id="cloak-panic-key" class="cloak-select">
+              <option value="Backquote">Backtick (`)</option>
+              <option value="Backslash">Backslash (\)</option>
+              <option value="F9">F9</option>
+              <option value="none">Disabled</option>
+            </select>
+          </div>
+          <div class="cloak-panic-field">
+            <label for="cloak-panic-target" class="cloak-section-label">Panic Screen</label>
+            <select id="cloak-panic-target" class="cloak-select">
+              <option value="classroom">Google Classroom</option>
+              <option value="classlink">ClassLink</option>
+              <option value="docs">Google Docs</option>
+            </select>
+          </div>
+          <div class="cloak-panic-action">
+            <button type="button" id="cloak-test-panic-btn" class="tool-btn">Preview Panic</button>
+          </div>
+        </div>
+        <p class="cloak-hint">Press your Panic Key anytime (or double-click the top bar of the decoy screen) to switch back.</p>
+      </div>
+    </div>
+
+    <!-- Yamal Settings Modal -->
+    <div id="settings-modal" class="cloak-modal" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title" hidden>
+      <div class="cloak-dialog">
+        <div class="cloak-dialog-header">
+          <div>
+            <h2 id="settings-modal-title" class="cloak-dialog-title">Yamal Settings</h2>
+            <p class="cloak-dialog-subtitle">
+              Customize appearance themes, launch in about:blank, and manage browsing preferences.
+            </p>
+          </div>
+          <button type="button" id="settings-close-btn" class="tool-btn" aria-label="Close settings">Close</button>
+        </div>
+
+        <div class="cloak-section">
+          <h3 class="cloak-section-label">Theme</h3>
+          <div id="settings-themes-grid" class="themes-grid"></div>
+        </div>
+
+        <div class="settings-card-group">
+          <div class="settings-row-split">
+            <div>
+              <h3 class="cloak-section-label">Open in about:blank</h3>
+              <p class="settings-desc">
+                Launches Yamal inside a blank browser window using your active Tab Cloak title and icon.
+              </p>
+            </div>
+            <button type="button" id="settings-about-blank-btn" class="btn-unblock">Open in about:blank</button>
+          </div>
+          <label class="settings-check-row">
+            <input type="checkbox" id="settings-redirect-original" />
+            <span>Redirect this tab to Google Classroom after opening about:blank</span>
+          </label>
+          <p id="settings-about-blank-status" class="settings-status" role="status" aria-live="polite"></p>
+        </div>
+
+        <div class="settings-options-grid">
+          <div class="cloak-panic-field">
+            <label for="settings-search-engine" class="cloak-section-label">Default Search Engine</label>
+            <select id="settings-search-engine" class="cloak-select">
+              <option value="bing">Bing Search</option>
+              <option value="wikipedia">Wikipedia</option>
+            </select>
+          </div>
+
+          <div class="settings-toggles-col">
+            <label class="settings-check-row">
+              <input type="checkbox" id="settings-show-bookmarks" checked />
+              <span>Show Quick Access bookmarks on Start Page</span>
+            </label>
+            <label class="settings-check-row">
+              <input type="checkbox" id="settings-prevent-close" />
+              <span>Warn before closing or leaving Yamal tab</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-footer">
+          <button type="button" id="settings-reset-btn" class="tool-btn tool-btn-danger">
+            Close All Tabs &amp; Reset Settings
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Session History Modal -->
+    <div id="history-modal" class="cloak-modal" role="dialog" aria-modal="true" aria-labelledby="history-modal-title" hidden>
+      <div class="cloak-dialog history-dialog">
+        <div class="cloak-dialog-header">
+          <div>
+            <h2 id="history-modal-title" class="cloak-dialog-title">Session History</h2>
+            <p class="cloak-dialog-subtitle">
+              Jump back or forward in the active tab, or reopen any site visited in this session.
+            </p>
+          </div>
+          <button type="button" id="history-close-btn" class="tool-btn" aria-label="Close session history">Close</button>
+        </div>
+
+        <div class="cloak-section">
+          <h3 class="cloak-section-label">Active Tab Trail</h3>
+          <div id="history-tab-trail" class="history-tab-trail"></div>
+        </div>
+
+        <div class="cloak-section">
+          <div class="history-list-header">
+            <h3 class="cloak-section-label">Visited Sites This Session</h3>
+            <button type="button" id="history-clear-btn" class="tool-btn tool-btn-danger history-clear-btn">
+              Clear Session History
+            </button>
+          </div>
+
+          <label for="history-search-input" class="sr-only">Filter session history</label>
+          <input
+            id="history-search-input"
+            type="search"
+            class="address-input history-search-input"
+            placeholder="Search visited sites by title or URL..."
+          />
+
+          <p id="history-empty-msg" class="history-empty-msg" hidden>No sites visited in this session yet.</p>
+          <div id="history-session-list" class="history-session-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="panic-overlay" class="panic-overlay" hidden></div>
+
+    <script type="module" src="/src/js/unblocker-page.js"></script>
+  </body>
+</html>
